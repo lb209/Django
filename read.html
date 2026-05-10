@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student CRUD</title>
+
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <script src="{% static 'home/script.js' %}"></script>
+</head>
+
+<body>
+
+<h1>Student Management System</h1>
+
+<hr>
+
+<!-- ================= CREATE ================= -->
+
+<h2>Add Student</h2>
+
+<form method="POST" action="/create/">
+    {% csrf_token %}
+
+    {% if form %}
+        {{ form.as_p }}
+    {% else %}
+
+        <input type="text"
+               name="name"
+               placeholder="Name"><br><br>
+
+        <input type="number"
+               name="age"
+               placeholder="Age"><br><br>
+
+        <input type="text"
+               name="city"
+               placeholder="City"><br><br>
+
+    {% endif %}
+
+    <button class="nam" type="submit">
+        Create
+    </button>
+
+</form>
+
+<hr>
+
+<!-- ================= FILE UPLOAD ================= -->
+
+<h2>Upload Image</h2>
+
+<form method="POST"
+      enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    <input type="file" name="image">
+
+    <button type="submit">
+        Upload Image
+    </button>
+
+</form>
+
+<hr>
+
+<!-- ================= SHOW IMAGES ================= -->
+
+<h2>Uploaded Images</h2>
+
+{% for i in data %}
+
+    <img src="{{ i.image.url }}"
+         width="30"
+         height="30">
+
+    <br><br>
+
+{% endfor %}
+
+<hr>
+
+<!-- ================= LIST ================= -->
+
+<h2>Student List</h2>
+
+{% for s in students %}
+
+    <p>
+        <b>{{ s.name }}</b> |
+        {{ s.age }} |
+        {{ s.city }}
+    </p>
+
+    <!-- ================= UPDATE ================= -->
+
+    <form method="POST"
+          action="/update/{{ s.id }}/">
+
+        {% csrf_token %}
+
+        <input type="text"
+               name="name"
+               value="{{ s.name }}"><br><br>
+
+        <input type="number"
+               name="age"
+               value="{{ s.age }}"><br><br>
+
+        <input type="text"
+               name="city"
+               value="{{ s.city }}"><br><br>
+
+        <button type="submit">
+            Update
+        </button>
+
+    </form>
+
+    <br>
+
+    <!-- ================= DELETE ================= -->
+
+    <a href="/delete/{{ s.id }}/">
+
+        <button type="button">
+            Delete
+        </button>
+
+    </a>
+
+    <hr>
+
+{% endfor %}
+
+</body>
+</html>
