@@ -1,100 +1,65 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Student, Image
-from myproject.forms import RegistrationForm
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 
 
-# ================= READ + IMAGE UPLOAD =================
-
-def read_student(request):
-
-    # IMAGE UPLOAD
-    if request.method == "POST" and request.FILES.get("image"):
-
-        pic = request.FILES.get("image")
-
-        Image.objects.create(image=pic)
-
-        return redirect("read")
-
-    students = Student.objects.all()
-
-    images = Image.objects.all()
-
-    form = RegistrationForm()
-
-    return render(request, 'home/Read.html', {
-
-        'students': students,
-        'form': form,
-        'data': images
-
-    })
+def home(request):
+    return render(request, "home/home.html")
 
 
-# ================= CREATE =================
+def register_user(request):
 
-def create_student(request):
+    if request.method == 'POST':
 
-    if request.method == "POST":
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
 
-        form = RegistrationForm(request.POST)
+        if username == '' or email == '' or password == '':
+            messages.error(request, "Please fill all fields")
+            return redirect('register')
 
-        if form.is_valid():
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists")
+            return redirect('register')
 
-            Student.objects.create(
+        if len(password) < 4:
+            messages.error(request, "Password too short")
+            return redirect('register')
 
-                name=form.cleaned_data['name'],
-                age=form.cleaned_data['age'],
-                city=form.cleaned_data['city']
+        User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
 
-            )
+        messages.success(request, "Account created successfully")
+        return redirect('login')
 
-            return redirect('read')
-
-        return render(request, 'home/Read.html', {
-
-            'form': form,
-            'students': Student.objects.all(),
-            'data': Image.objects.all()
-
-        })
-
-    return redirect('read')
-
-
-# ================= UPDATE =================
-
-def update_student(request, id):
-
-    student = get_object_or_404(Student, id=id)
-
-    if request.method == "POST":
-
-        form = RegistrationForm(request.POST)
-
-        if form.is_valid():
-
-            student.name = form.cleaned_data['name']
-            student.age = form.cleaned_data['age']
-            student.city = form.cleaned_data['city']
-
-            student.save()
-
-            return redirect('read')
-
-    return render(request, 'home/update.html', {
-
-        'student': student
-
-    })
+    return render(request, 'home/register.html')
 
 
-# ================= DELETE =================
+def login_user(request):
 
-def delete_student(request, id):
+    if request.method == 'POST':
 
-    student = get_object_or_404(Student, id=id)
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-    student.delete()
+        user = authenticate(request, username=username, password=password)
 
-    return redirect('read')
+        if user is not None:
+            login(request, user)
+            return redirect("home")
+
+        else:
+            messages.error(request, "Invalid Username or Password")
+            return redirect("login")
+
+    return render(request, 'home/login.html')
+
+
+def logout_user(request):
+    logout(request)
+    return redirect("login")
