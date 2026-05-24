@@ -1,23 +1,75 @@
-<h1>Register</h1>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Register</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 
-<form method="POST">
-    {% csrf_token %}
+<body style="
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#0f172a,#1e293b,#0b1220);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+">
 
-    <input type="text" name="username" placeholder="Username">
-    <br><br>
+<form method="POST" style="
+background:rgba(255,255,255,0.95);
+padding:30px;
+border-radius:20px;
+width:340px;
+box-shadow:0 20px 50px rgba(0,0,0,0.5);
+">
 
-    <input type="email" name="email" placeholder="Email">
-    <br><br>
+{% csrf_token %}
 
-    <input type="password" name="password" placeholder="Password">  
-    <br><br>
+<h2 style="text-align:center;color:#1e293b;">Register</h2>
 
-    <button type="submit">
-        Register
-    </button>
-    {% for message in messages %}
+<input type="text" name="username" placeholder="Username" style="
+width:100%;
+padding:12px;
+margin-top:15px;
+border-radius:10px;
+border:1px solid #ddd;
+">
 
-    <h3>{{ message }}</h3>
+<input type="email" name="email" placeholder="Email" style="
+width:100%;
+padding:12px;
+margin-top:15px;
+border-radius:10px;
+border:1px solid #ddd;
+">
 
+<input type="password" name="password" placeholder="Password" style="
+width:100%;
+padding:12px;
+margin-top:15px;
+border-radius:10px;
+border:1px solid #ddd;
+">
+
+<button type="submit" style="
+width:100%;
+padding:12px;
+margin-top:20px;
+background:linear-gradient(135deg,#22c55e,#16a34a);
+color:white;
+border:none;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+">
+Register
+</button>
+
+{% for message in messages %}
+<p style="color:red;text-align:center;">{{ message }}</p>
 {% endfor %}
+
 </form>
+
+</body>
+</html>

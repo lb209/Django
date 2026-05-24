@@ -1,137 +1,371 @@
-{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Student CRUD</title>
+<title>Students</title>
 
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-    <script src="{% static 'home/script.js' %}"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
 
-<body>
+<body style="
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#0f172a,#1e293b,#0b1220);
+color:white;
+padding:20px;
+">
+
+<!-- HEADER -->
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:20px;
+">
 
 <h1>Student Management System</h1>
 
+<!-- SEARCH + SORT -->
+<form id="searchForm" method="GET" action="/search/" style="
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+align-items:center;
+">
+
+<!-- SEARCH -->
+<input
+type="text"
+name="search"
+id="searchInput"
+placeholder="Search By Name"
+value="{{ request.GET.search }}"
+onkeyup="searchData()"
+style="
+padding:12px;
+border:none;
+border-radius:10px;
+width:220px;
+outline:none;
+"
+>
+
+<!-- SORT -->
+<select
+name="sort"
+id="sortInput"
+onchange="searchData()"
+style="
+padding:12px;
+border:none;
+border-radius:10px;
+width:220px;
+outline:none;
+"
+>
+
+<option value="">
+Sort By
+</option>
+
+<option value="asc"
+{% if request.GET.sort == 'asc' %}
+selected
+{% endif %}
+>
+Name Ascending (A-Z)
+</option>
+
+<option value="desc"
+{% if request.GET.sort == 'desc' %}
+selected
+{% endif %}
+>
+Name Descending (Z-A)
+</option>
+
+<option value="age_low"
+{% if request.GET.sort == 'age_low' %}
+selected
+{% endif %}
+>
+Age Low To High
+</option>
+
+<option value="age_high"
+{% if request.GET.sort == 'age_high' %}
+selected
+{% endif %}
+>
+Age High To Low
+</option>
+
+</select>
+
+</form>
+
+<!-- LOGOUT -->
+<a href="/logout/" style="
+background:linear-gradient(135deg,#ef4444,#dc2626);
+color:white;
+padding:10px 20px;
+text-decoration:none;
+border-radius:10px;
+font-weight:bold;
+">
+Logout
+</a>
+
+</div>
+
+<!-- SEARCH SCRIPT -->
+<script>
+
+let timeout = null
+
+function searchData(){
+
+    clearTimeout(timeout)
+
+    timeout = setTimeout(() => {
+
+        let search =
+        document.getElementById('searchInput').value
+
+        let sort =
+        document.getElementById('sortInput').value
+
+        window.location.href =
+        `/search/?search=${search}&sort=${sort}`
+
+    }, 300)
+
+}
+
+</script>
+
 <hr>
 
-<!-- ================= CREATE ================= -->
-
+<!-- ADD STUDENT FORM -->
 <h2>Add Student</h2>
 
-<form method="POST" action="/create/">
-    {% csrf_token %}
+<form
+method="POST"
+action="/create/"
+enctype="multipart/form-data"
+style="
+background:rgba(255,255,255,0.08);
+padding:20px;
+border-radius:20px;
+"
+>
 
-    {% if form %}
-        {{ form.as_p }}
-    {% else %}
+{% csrf_token %}
 
-        <input type="text"
-               name="name"
-               placeholder="Name"><br><br>
+<input
+type="text"
+name="name"
+placeholder="Name"
+style="
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+border:none;
+outline:none;
+"
+>
 
-        <input type="number"
-               name="age"
-               placeholder="Age"><br><br>
+<input
+type="number"
+name="age"
+placeholder="Age"
+style="
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+border:none;
+outline:none;
+"
+>
 
-        <input type="text"
-               name="city"
-               placeholder="City"><br><br>
+<input
+type="text"
+name="city"
+placeholder="City"
+style="
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+border:none;
+outline:none;
+"
+>
 
-    {% endif %}
+<input
+type="file"
+name="image"
+style="
+margin-top:15px;
+"
+>
 
-    <button class="nam" type="submit">
-        Create
-    </button>
+<button
+type="submit"
+style="
+margin-top:15px;
+background:linear-gradient(135deg,#667eea,#764ba2);
+color:white;
+padding:12px;
+border:none;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+"
+>
+Create
+</button>
 
 </form>
 
 <hr>
 
-<!-- ================= FILE UPLOAD ================= -->
-
-<h2>Upload Image</h2>
-
-<form method="POST"
-      enctype="multipart/form-data">
-
-    {% csrf_token %}
-
-    <input type="file" name="image">
-
-    <button type="submit">
-        Upload Image
-    </button>
-
-</form>
-
-<hr>
-
-<!-- ================= SHOW IMAGES ================= -->
-
-<h2>Uploaded Images</h2>
-
-{% for i in data %}
-
-    <img src="{{ i.image.url }}"
-         width="30"
-         height="30">
-
-    <br><br>
-
-{% endfor %}
-
-<hr>
-
-<!-- ================= LIST ================= -->
-
+<!-- STUDENT LIST -->
 <h2>Student List</h2>
 
 {% for s in students %}
 
-    <p>
-        <b>{{ s.name }}</b> |
-        {{ s.age }} |
-        {{ s.city }}
-    </p>
+<div style="
+background:rgba(255,255,255,0.08);
+padding:20px;
+border-radius:20px;
+margin-top:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+">
 
-    <!-- ================= UPDATE ================= -->
+<!-- LEFT SIDE -->
+<div style="
+display:flex;
+gap:15px;
+align-items:center;
+">
 
-    <form method="POST"
-          action="/update/{{ s.id }}/">
+{% if s.image %}
 
-        {% csrf_token %}
+<img
+src="{{ s.image.url }}"
+style="
+width:70px;
+height:70px;
+border-radius:50%;
+object-fit:cover;
+"
+>
 
-        <input type="text"
-               name="name"
-               value="{{ s.name }}"><br><br>
+{% endif %}
 
-        <input type="number"
-               name="age"
-               value="{{ s.age }}"><br><br>
+<div>
 
-        <input type="text"
-               name="city"
-               value="{{ s.city }}"><br><br>
+<h3>{{ s.name }}</h3>
 
-        <button type="submit">
-            Update
-        </button>
+<p>
+{{ s.age }} | {{ s.city }}
+</p>
 
-    </form>
+</div>
 
-    <br>
+</div>
 
-    <!-- ================= DELETE ================= -->
+<!-- RIGHT SIDE -->
+<div>
 
-    <a href="/delete/{{ s.id }}/">
+<!-- UPDATE -->
+<form
+method="POST"
+action="/update/{{ s.id }}/"
+enctype="multipart/form-data"
+>
 
-        <button type="button">
-            Delete
-        </button>
+{% csrf_token %}
 
-    </a>
+<input
+type="text"
+name="name"
+value="{{ s.name }}"
+>
 
-    <hr>
+<input
+type="number"
+name="age"
+value="{{ s.age }}"
+>
+
+<input
+type="text"
+name="city"
+value="{{ s.city }}"
+>
+
+<input
+type="file"
+name="image"
+>
+
+<button
+style="
+background:linear-gradient(135deg,#22c55e,#16a34a);
+color:white;
+padding:8px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+"
+>
+Update
+</button>
+
+</form>
+
+<!-- DELETE -->
+<a href="/delete/{{ s.id }}/">
+
+<button
+style="
+margin-top:10px;
+background:linear-gradient(135deg,#ef4444,#dc2626);
+color:white;
+padding:10px;
+border:none;
+border-radius:10px;
+font-weight:bold;
+cursor:pointer;
+"
+>
+Delete
+</button>
+
+</a>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<h2 style="
+text-align:center;
+margin-top:50px;
+">
+No Student Found
+</h2>
 
 {% endfor %}
 
