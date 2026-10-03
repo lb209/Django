@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Student Management</title>
+
+</head>
+
+
+<body>
+
+    <h1>Student Management</h1>
+
+
+    <!-- ========================= -->
+    <!-- ADD STUDENT -->
+    <!-- ========================= -->
+
+    <h2>Add Student</h2>
+
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+    >
+
+        {% csrf_token %}
+
+
+        <input
+            type="text"
+            name="name"
+            placeholder="Name"
+            required
+        >
+
+        <br><br>
+
+
+        <input
+            type="number"
+            name="roll_number"
+            placeholder="Roll Number"
+            required
+        >
+
+        <br><br>
+
+
+        <input
+            type="text"
+            name="course"
+            placeholder="Course"
+            required
+        >
+
+        <br><br>
+
+
+        <input
+            type="file"
+            name="image"
+            accept="image/*"
+        >
+
+        <br><br>
+
+
+        <button type="submit">
+            Add Student
+        </button>
+
+
+    </form>
+
+
+    <hr>
+
+
+    <!-- ========================= -->
+    <!-- EDIT STUDENT -->
+    <!-- ========================= -->
+
+    {% if edit_student %}
+
+        <h2>Edit Student</h2>
+
+
+        <form
+            method="POST"
+            action="{% url 'edit_student' edit_student.id %}"
+            enctype="multipart/form-data"
+        >
+
+            {% csrf_token %}
+
+
+            <input
+                type="text"
+                name="name"
+                value="{{ edit_student.name }}"
+                autofocus
+                required
+            >
+
+            <br><br>
+
+
+            <input
+                type="number"
+                name="roll_number"
+                value="{{ edit_student.roll_number }}"
+                required
+            >
+
+            <br><br>
+
+
+            <input
+                type="text"
+                name="course"
+                value="{{ edit_student.course }}"
+                required
+            >
+
+            <br><br>
+
+
+            <!-- OLD IMAGE -->
+
+            {% if edit_student.image %}
+
+                <p>Current Image:</p>
+
+                <img
+                    src="{{ edit_student.image.url }}"
+                    width="120"
+                    height="120"
+                >
+
+                <br><br>
+
+            {% endif %}
+
+
+            <!-- NEW IMAGE -->
+
+            <input
+                type="file"
+                name="image"
+                accept="image/*"
+            >
+
+            <br><br>
+
+
+            <button type="submit">
+                Update Student
+            </button>
+
+
+        </form>
+
+
+        <hr>
+
+    {% endif %}
+
+
+    <!-- ========================= -->
+    <!-- STUDENT LIST -->
+    <!-- ========================= -->
+
+    <h2>Students</h2>
+
+
+    {% for s in student %}
+
+
+        <div>
+
+            <!-- IMAGE -->
+
+            {% if s.image %}
+
+                <img
+                    src="{{ s.image.url }}"
+                    width="120"
+                    height="120"
+                    alt="Student Image"
+                >
+
+            {% else %}
+
+                <p>No Image</p>
+
+            {% endif %}
+
+
+            <p>
+                Name: {{ s.name }}
+            </p>
+
+
+            <p>
+                Roll Number: {{ s.roll_number }}
+            </p>
+
+
+            <p>
+                Course: {{ s.course }}
+            </p>
+
+
+            <!-- EDIT -->
+
+            <a href="{% url 'edit_student' s.id %}">
+
+                <button type="button">
+                    Edit
+                </button>
+
+            </a>
+
+
+            <!-- DELETE -->
+
+            <a href="{% url 'delete_student' s.id %}">
+
+                <button type="button">
+                    Delete
+                </button>
+
+            </a>
+
+
+        </div>
+
+
+        <hr>
+
+
+    {% empty %}
+
+        <p>No students found.</p>
+
+    {% endfor %}
+
+
+</body>
+
+</html>

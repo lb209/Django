@@ -1,10 +1,21 @@
+from django.contrib import admin
 from django.urls import path
-from .views import register_user, login_user, create_order, dashboard_stats, api_home
-
+from home.views import home, delete_student, edit_student
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
-    path('', api_home, name='api_home'),
-    path('register/', register_user, name='register_user'),          # 'api/' ہٹا دیا تاکہ فرنٹ اینڈ سے میچ ہو جائے
-    path('login/', login_user, name='login_user'),                # 'api/' ہٹا دیا
-    path('create-order/', create_order, name='create_order'),        # 'api/' ہٹا دیا
-    path('dashboard-stats/', dashboard_stats, name='dashboard_stats'), # 'api/' ہٹا دیا
+    path("admin/", admin.site.urls),
+
+    path("", home, name="home"),
+
+    path("delete/<int:id>/", delete_student, name="delete_student"),
+
+    path("edit/<int:id>/", edit_student, name="edit_student"),
+
+    
 ]
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )
